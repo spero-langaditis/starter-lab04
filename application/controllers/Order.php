@@ -103,7 +103,16 @@ class Order extends Application {
 
     // proceed with checkout
     function proceed($order_num) {
-        //FIXME
+        date_default_timezone_set('America/Vancouver');
+        if (!$this->orders->validate($order_num)) {
+            redirect('/order/display_menu/' . $order_num);
+        }
+        $record = $this->orders->get($order_num);
+        $record->date = date('Y-m-d H:m:s');
+        $record->status = 'c';
+        $record->total = $this->orders->total($order_num);
+        $this->orders->update($record);
+     
         redirect('/');
     }
 
