@@ -102,8 +102,9 @@ class Order extends Application {
     }
 
     // proceed with checkout
-    function proceed($order_num) {
+    function commit($order_num) {
         date_default_timezone_set('America/Vancouver');
+        // Will process order if its valid
         if (!$this->orders->validate($order_num)) {
             redirect('/order/display_menu/' . $order_num);
         }
@@ -111,14 +112,17 @@ class Order extends Application {
         $record->date = date('Y-m-d H:m:s');
         $record->status = 'c';
         $record->total = $this->orders->total($order_num);
-        $this->orders->update($record);
-     
+        $this->orders->update($record);    
         redirect('/');
     }
 
     // cancel the order
     function cancel($order_num) {
-        //FIXME
+        //deletes the order
+        $this->orderitems->delete_some($order_num);
+        $record = $this->orders->get($order_num);
+        $record->status = 'x';
+        $this->orders->update($record);
         redirect('/');
     }
 
