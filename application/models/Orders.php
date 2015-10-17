@@ -14,7 +14,21 @@ class Orders extends MY_Model {
 
     // add an item to an order
     function add_item($num, $code) {
-        
+        //Checks if the item is in the order then updates
+        //quantity, if its not it add item and set the quantity
+        //to 1
+        $CI = & get_instance();
+        if ($CI->orderitems->get($num, $code)) {
+            $record = $CI->orderitems->get($num, $code);
+            $record->quantity++;
+            $CI->orderitems->update($record);
+        } else {
+            $record = $CI->orderitems->create();
+            $record->order = $num;
+            $record->item = $code;
+            $record->quantity = 1;
+            $CI->orderitems->add($record);
+        }
     }
 
     // calculate the total for an order
